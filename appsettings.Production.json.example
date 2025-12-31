@@ -1,17 +1,16 @@
 {
-  "_comment": "DEVELOPMENT SETTINGS ONLY - Do not use these values in production!",
   "Logging": {
     "LogLevel": {
-      "Default": "Information",
+      "Default": "Warning",
       "Microsoft.AspNetCore": "Warning"
     }
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "ConStr": "Data Source=.\\sqlexpress;Initial Catalog=CarServiceApp;Trusted_Connection=True;TrustServerCertificate=True;"
+    "ConStr": "YOUR_PRODUCTION_CONNECTION_STRING"
   },
   "JwtSettings": {
-    "SecretKey": "DevOnlySecretKey_Replace_In_Production_With_Strong_Key!",
+    "SecretKey": "YOUR_PRODUCTION_JWT_SECRET_KEY_AT_LEAST_32_CHARACTERS",
     "Issuer": "DispatchApp",
     "Audience": "DispatchAppUsers",
     "ExpirationMinutes": "60"
@@ -19,13 +18,13 @@
   "EmailSettings": {
     "SmtpHost": "smtp.gmail.com",
     "SmtpPort": "587",
-    "SmtpUsername": "",
-    "SmtpPassword": "",
-    "FromEmail": "",
+    "SmtpUsername": "YOUR_EMAIL@gmail.com",
+    "SmtpPassword": "YOUR_APP_PASSWORD",
+    "FromEmail": "YOUR_EMAIL@gmail.com",
     "FromName": "Dispatch App"
   },
   "GoogleMaps": {
-    "ApiKey": ""
+    "ApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
   },
   "DriverAvailability": {
     "DefaultTravelTimeMinutes": 20,
@@ -34,9 +33,12 @@
     "GracePeriodScalingEnabled": true
   },
   "SquareSettings": {
-    "ApplicationId": "",
-    "AccessToken": "",
-    "Environment": "Sandbox",
-    "LocationId": ""
-  }
+    "ApplicationId": "YOUR_SQUARE_PRODUCTION_APP_ID",
+    "AccessToken": "YOUR_SQUARE_PRODUCTION_ACCESS_TOKEN",
+    "Environment": "Production",
+    "LocationId": "YOUR_SQUARE_LOCATION_ID"
+  },
+  "AllowedOrigins": [
+    "https://your-production-domain.com"
+  ]
 }

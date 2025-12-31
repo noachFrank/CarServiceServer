@@ -10,6 +10,11 @@ using DispatchApp.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load environment-specific configuration
+// Priority: appsettings.json < appsettings.{Environment}.json < appsettings.Local.json < Environment Variables
+builder.Configuration
+    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
 // Configure Kestrel to listen on HTTP for mobile development
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {

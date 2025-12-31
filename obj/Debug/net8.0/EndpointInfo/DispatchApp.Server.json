@@ -1,0 +1,2417 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "DispatchApp.Server",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/Communication/AddCom": {
+      "post": {
+        "tags": [
+          "Communication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Communication"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Communication"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Communication"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/TodaysCom": {
+      "get": {
+        "tags": [
+          "Communication"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/AllCom": {
+      "get": {
+        "tags": [
+          "Communication"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/driverUnreadCount": {
+      "get": {
+        "tags": [
+          "Communication"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/MarkAsRead": {
+      "post": {
+        "tags": [
+          "Communication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/BroadcastComs": {
+      "get": {
+        "tags": [
+          "Communication"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Communication/Unread": {
+      "get": {
+        "tags": [
+          "Communication"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Notification/GetPreferences": {
+      "get": {
+        "tags": [
+          "Notification"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Notification/UpdatePreferences": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/TokenizeAndChargeCard": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenizeAndChargeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenizeAndChargeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenizeAndChargeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/ChargeCard": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeCardRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeCardRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeCardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/VerifyToken": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AddRide": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ride"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ride"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ride"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AssignRide": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assignment"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assignment"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assignment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CancelDriver": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CancelRide": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CancelRecurring": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/PickUp": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/DroppedOff": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AddStop": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStop"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStop"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStop"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/UpdatePrice": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePriceDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePriceDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePriceDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AddWaitTime": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AddTip": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTipOrWaitTime"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/ResetPickupTime": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard/AssignedRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard/OpenRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard/RidesInProgress": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard/RecurringRidesThisWeek": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Dashboard/TodaysRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Open": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/Open/{userId}": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AssignedRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CurrentlyBeingDriven": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/GetById": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/FutureRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/TodaysRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/RidesThisWeek": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AllRides": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/DriverRideHistory": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/AssignedRidesByDriver": {
+      "get": {
+        "tags": [
+          "Ride"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CalculateDistance": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DistanceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DistanceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DistanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ride/CalculatePrice": {
+      "post": {
+        "tags": [
+          "Ride"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePriceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePriceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePriceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/refresh": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/logout": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/AddDispatcher": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/AddDriver": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/UpdateDispatcher": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispatcher"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/UpdateDriver": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Driver"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/FireDispatcher": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/FireDriver": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/AddCar": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/UpdateCar": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Car"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/SetPrimaryCar": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPrimaryCarRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPrimaryCarRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPrimaryCarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/ActiveDispatchers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/LoggedInDispatchers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/ActiveDrivers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/Dashboard/ActiveDrivers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/Dashboard/DriversOnJob": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/AllDrivers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/ActiveDriversOnCall": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/DriverById": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/isAdmin": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/getCars": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/getDriverStatus": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/GetFiredWorkers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/getDriversDriving": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/getOnlineDrivers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/RegisterPushToken": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/UnregisterPushToken": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/UpdatePassword": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/User/ForgotPassword": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddStop": {
+        "type": "object",
+        "properties": {
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddTipOrWaitTime": {
+        "type": "object",
+        "properties": {
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Assignment": {
+        "type": "object",
+        "properties": {
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assignToId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CalculatePriceRequest": {
+        "type": "object",
+        "properties": {
+          "pickup": {
+            "type": "string",
+            "nullable": true
+          },
+          "dropOff": {
+            "type": "string",
+            "nullable": true
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "carType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isRoundTrip": {
+            "type": "boolean"
+          },
+          "scheduledTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Car": {
+        "type": "object",
+        "properties": {
+          "carId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "driverId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CarType"
+          },
+          "make": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "seats": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "licensePlate": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CarType": {
+        "enum": [
+          "Car",
+          "SUV",
+          "MiniVan",
+          "TwelvePass",
+          "FifteenPass",
+          "MercSprinter",
+          "LuxurySUV"
+        ],
+        "type": "string"
+      },
+      "ChangePriceDTO": {
+        "type": "object",
+        "properties": {
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "driversComp": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChargeCardRequest": {
+        "type": "object",
+        "properties": {
+          "paymentTokenId": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Communication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "driverId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "from": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "read": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Dispatcher": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateJoined": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAdmin": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DistanceRequest": {
+        "type": "object",
+        "properties": {
+          "originLatitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "originLongitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "destinationAddress": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Driver": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "license": {
+            "type": "string",
+            "nullable": true
+          },
+          "joinedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "onJob": {
+            "type": "boolean"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "expoPushToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "cars": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Car"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "userType": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameOrEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "userType": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PushTokenRequest": {
+        "type": "object",
+        "properties": {
+          "driverId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pushToken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Recurring": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dayOfWeek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "time": {
+            "type": "string",
+            "format": "time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Ride": {
+        "type": "object",
+        "properties": {
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "routeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "callTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pickupTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dropOffTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "cost": {
+            "type": "number",
+            "format": "double"
+          },
+          "tip": {
+            "type": "number",
+            "format": "double"
+          },
+          "waitTimeAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "driversCompensation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "assignedToId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reassignedToId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "dispatchedById": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "paymentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentTokenId": {
+            "type": "string",
+            "nullable": true
+          },
+          "reassigned": {
+            "type": "boolean"
+          },
+          "canceled": {
+            "type": "boolean"
+          },
+          "carType": {
+            "$ref": "#/components/schemas/CarType"
+          },
+          "passengers": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "carSeat": {
+            "type": "boolean"
+          },
+          "isRecurring": {
+            "type": "boolean"
+          },
+          "flightNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurringId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "recurring": {
+            "$ref": "#/components/schemas/Recurring"
+          },
+          "route": {
+            "$ref": "#/components/schemas/Routes"
+          },
+          "assignedTo": {
+            "$ref": "#/components/schemas/Driver"
+          },
+          "reassignedTo": {
+            "$ref": "#/components/schemas/Driver"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Routes": {
+        "type": "object",
+        "properties": {
+          "routeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pickup": {
+            "type": "string",
+            "nullable": true
+          },
+          "dropOff": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop1": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop2": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop3": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop4": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop5": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop6": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop7": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop8": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop9": {
+            "type": "string",
+            "nullable": true
+          },
+          "stop10": {
+            "type": "string",
+            "nullable": true
+          },
+          "roundTrip": {
+            "type": "boolean"
+          },
+          "estimatedDuration": {
+            "type": "string",
+            "format": "time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SetPrimaryCarRequest": {
+        "type": "object",
+        "properties": {
+          "carId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenizeAndChargeRequest": {
+        "type": "object",
+        "properties": {
+          "cardNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiryMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiryYear": {
+            "type": "string",
+            "nullable": true
+          },
+          "cvv": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardholderName": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "rideId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userType": {
+            "type": "string",
+            "nullable": true
+          },
+          "oldPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdatePreferencesRequest": {
+        "type": "object",
+        "properties": {
+          "driverId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "messagesEnabled": {
+            "type": "boolean"
+          },
+          "broadcastMessagesEnabled": {
+            "type": "boolean"
+          },
+          "newCallEnabled": {
+            "type": "boolean"
+          },
+          "callAvailableAgainEnabled": {
+            "type": "boolean"
+          },
+          "myCallReassignedEnabled": {
+            "type": "boolean"
+          },
+          "myCallCanceledEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerifyTokenRequest": {
+        "type": "object",
+        "properties": {
+          "paymentTokenId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

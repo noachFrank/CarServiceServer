@@ -1,0 +1,29 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\noach\\source\\repos\\DispatchApp\\DispatchApp.Server\\wwwroot\\square-tokenizer.html",
+      "PackagePath": "staticwebassets\\square-tokenizer.html"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.DispatchApp.Server.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.DispatchApp.Server.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.DispatchApp.Server.props",
+      "PackagePath": "build\\DispatchApp.Server.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.DispatchApp.Server.props",
+      "PackagePath": "buildMultiTargeting\\DispatchApp.Server.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.DispatchApp.Server.props",
+      "PackagePath": "buildTransitive\\DispatchApp.Server.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

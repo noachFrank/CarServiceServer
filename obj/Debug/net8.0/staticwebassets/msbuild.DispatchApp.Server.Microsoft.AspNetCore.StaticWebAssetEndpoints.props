@@ -1,0 +1,16 @@
+﻿<Project>
+  <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/DispatchApp.Server/square-tokenizer.html">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\square-tokenizer.html'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-257Kzp7jG1iieLJXsyNDaZ5wWoxgf/gQoSg7EpR\u002Bie0="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"6812"},{"Name":"Content-Type","Value":"text/html"},{"Name":"ETag","Value":"\u0022257Kzp7jG1iieLJXsyNDaZ5wWoxgf/gQoSg7EpR\u002Bie0=\u0022"},{"Name":"Last-Modified","Value":"Thu, 25 Dec 2025 19:25:13 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/DispatchApp.Server/square-tokenizer.xhyml9d1p4.html">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\square-tokenizer.html'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"xhyml9d1p4"},{"Name":"integrity","Value":"sha256-257Kzp7jG1iieLJXsyNDaZ5wWoxgf/gQoSg7EpR\u002Bie0="},{"Name":"label","Value":"_content/DispatchApp.Server/square-tokenizer.html"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"6812"},{"Name":"Content-Type","Value":"text/html"},{"Name":"ETag","Value":"\u0022257Kzp7jG1iieLJXsyNDaZ5wWoxgf/gQoSg7EpR\u002Bie0=\u0022"},{"Name":"Last-Modified","Value":"Thu, 25 Dec 2025 19:25:13 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+  </ItemGroup>
+</Project>

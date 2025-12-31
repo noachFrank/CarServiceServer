@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\DispatchApp.Server.props" />
+</Project>

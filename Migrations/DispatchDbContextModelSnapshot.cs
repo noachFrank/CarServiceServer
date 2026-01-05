@@ -373,6 +373,9 @@ namespace DispatchApp.Server.Migrations
                     b.Property<DateTime>("ScheduledFor")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Settled")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Tip")
                         .HasColumnType("decimal(18,2)");
 

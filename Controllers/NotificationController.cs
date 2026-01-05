@@ -1,11 +1,13 @@
 using DispatchApp.Server.Data.DataRepositories;
 using DispatchApp.Server.Data.DataTypes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DispatchApp.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // Require authentication for all endpoints
     public class NotificationController : ControllerBase
     {
         private readonly string _connectionString;

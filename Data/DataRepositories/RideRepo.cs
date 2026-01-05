@@ -175,8 +175,42 @@ namespace DispatchApp.Server.Data.DataRepositories
         {
             using (var context = new DispatchDbContext(_connectionString))
             {
-                return context.Rides.Include(r => r.Route).Include(r => r.AssignedTo).Include(r => r.ReassignedTo).Include(r => r.DispatchedBy).Include(r => r.Recurring)
+                return context.Rides
+                    .Include(r => r.Route)
+                    .Include(r => r.AssignedTo)
+                    .Include(r => r.ReassignedTo)
+                    .Include(r => r.DispatchedBy)
+                    .Include(r => r.Recurring)
+                    .Include(r => r.AssignedTo.Cars)
+                    .Include(r => r.ReassignedTo.Cars)
                     .FirstOrDefault(x => x.RideId == rideId);
+            }
+        }
+
+        public List<Ride> GetUnsettledRides()
+        {
+            using (var context = new DispatchDbContext(_connectionString))
+            {
+                return context.Rides
+                    .Include(r => r.Route)
+                    .Include(r => r.AssignedTo)
+                    .Include(r => r.ReassignedTo)
+                    .Where(r => !r.Settled && r.DropOffTime != null && !r.Canceled)
+                    .ToList();
+            }
+        }
+
+        public List<Ride> GetUnsettledRidesByDriver(int driverId)
+        {
+            using (var context = new DispatchDbContext(_connectionString))
+            {
+                return context.Rides
+                    .Include(r => r.Route)
+                    .Include(r => r.AssignedTo)
+                    .Include(r => r.ReassignedTo)
+                    .Where(r => !r.Settled && r.DropOffTime != null && !r.Canceled &&
+                        ((r.Reassigned && r.ReassignedToId == driverId) || (!r.Reassigned && r.AssignedToId == driverId)))
+                    .ToList();
             }
         }
 
@@ -214,7 +248,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
                 if (ride.AssignedToId != null && ride.Reassigned)
                     ReassignRide(rideId, driverId);
@@ -231,7 +265,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
                 else if (ride.AssignedToId == null)
                     AssignRide(rideId, driverId);
@@ -249,7 +283,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.PickupTime = DateTime.UtcNow;
@@ -263,7 +297,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
 
@@ -299,8 +333,6 @@ namespace DispatchApp.Server.Data.DataRepositories
                 ride.DropOffTime = DateTime.UtcNow;
                 context.SaveChanges();
 
-                //var userRepo = new UserRepo(_connectionString);
-                //userRepo.ChangeDriverOnJobStatus((ride.Reassigned ? ride.ReassignedToId : ride.AssignedToId), false);
             }
         }
 
@@ -310,7 +342,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 if (ride.Reassigned != null && ride.Reassigned)
@@ -326,7 +358,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 if (ride.IsRecurring && ride.RecurringId is int recId)
@@ -406,7 +438,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.Cost += cost;
@@ -422,7 +454,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.Cost = cost;
@@ -438,7 +470,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.WaitTimeAmount = amount;
@@ -454,7 +486,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.Tip = amount;
@@ -469,7 +501,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             {
                 var ride = context.Rides.FirstOrDefault(x => x.RideId == rideId);
 
-                if (ride.IsNull())
+                if (ride == null)
                     throw new Exception($"Ride with ID {rideId} not found.");
 
                 ride.PickupTime = null;
@@ -493,6 +525,40 @@ namespace DispatchApp.Server.Data.DataRepositories
                 context.SaveChanges();
             }
         }
+
+
+
+        public void SettleDriverRides(int driverId)
+        {
+            using (var context = new DispatchDbContext(_connectionString))
+            {
+                var rides = context.Rides
+                    .Where(r => !r.Settled && r.DropOffTime != null && !r.Canceled &&
+                        ((r.Reassigned && r.ReassignedToId == driverId) || (!r.Reassigned && r.AssignedToId == driverId)))
+                    .ToList();
+
+                foreach (var ride in rides)
+                {
+                    ride.Settled = true;
+                }
+
+                context.SaveChanges();
+            }
+        }
+
+        public void SettleRide(int rideId)
+        {
+            using (var context = new DispatchDbContext(_connectionString))
+            {
+                var ride = context.Rides.FirstOrDefault(r => r.RideId == rideId);
+                if (ride != null)
+                {
+                    ride.Settled = true;
+                    context.SaveChanges();
+                }
+            }
+        }
+
 
         public int GetLastStopIndex(Routes route)
         {

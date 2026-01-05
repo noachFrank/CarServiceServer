@@ -54,8 +54,6 @@ namespace DispatchApp.Server.Services
                 Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
                 throw;
             }
-
-            Console.WriteLine($"✅ Square Payment Service initialized in {environment} mode");
         }
 
         /// <summary>

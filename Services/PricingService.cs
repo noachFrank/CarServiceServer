@@ -43,41 +43,103 @@ namespace DispatchApp.Server.Services
             { "JFK", addr => IsJFK(addr) },
             { "LGA", addr => IsLGA(addr) },
             { "EWR", addr => IsEWR(addr) },
+            { "PHL", addr => IsPHL(addr) },
             { "PHILLY", addr => IsPhilly(addr) },
             { "PASSAIC", addr => IsPassaic(addr) },
             { "LINDEN", addr => IsLinden(addr) }
         };
 
         // Location detection methods
+
+        /// <summary>
+        /// Lakewood area: Lakewood (08701), Jackson (08527), Toms River (08753-08757), 
+        /// Howell (07731-07733), Brick (08723-08724), Manchester (08759), 
+        /// Freehold (07728), Ocean Township area
+        /// </summary>
         private static bool IsLakewood(string addr) =>
             addr.Contains("Lakewood", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b087\d{2}\b");
+            addr.Contains("Jackson", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Toms River", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Howell", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Brick", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Manchester", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Freehold", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Ocean Township", StringComparison.OrdinalIgnoreCase) ||
+            // Lakewood: 08701
+            // Jackson: 08527
+            // Toms River: 08753, 08754, 08755, 08756, 08757
+            // Howell: 07731, 07732, 07733
+            // Brick: 08723, 08724
+            // Manchester: 08759
+            // Freehold: 07728
+            Regex.IsMatch(addr, @"\b(08701|08527|0875[3-9]|0773[1-3]|0872[34]|08759|07728)\b");
 
+        /// <summary>
+        /// Brooklyn general: All Brooklyn addresses not matched by specific neighborhoods
+        /// Brooklyn zips: 11201-11256
+        /// </summary>
         private static bool IsBrooklyn(string addr) =>
             addr.Contains("Brooklyn", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b112\d{2}\b");
+            Regex.IsMatch(addr, @"\b112[0-5]\d\b");
 
+        /// <summary>
+        /// Flatbush: 11210, 11226, 11230, 11234, 11203 (East Flatbush)
+        /// </summary>
         private static bool IsFlatbush(string addr) =>
             addr.Contains("Flatbush", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b(11210|11226|11230|11234)\b");
+            addr.Contains("East Flatbush", StringComparison.OrdinalIgnoreCase) ||
+            Regex.IsMatch(addr, @"\b(11210|11226|11230|11234|11203|11225)\b");
 
+        /// <summary>
+        /// Borough Park: 11204, 11218, 11219, 11214 (Bensonhurst/BP border)
+        /// </summary>
         private static bool IsBoroughPark(string addr) =>
             addr.Contains("Borough Park", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b(11204|11218|11219)\b");
+            addr.Contains("Boro Park", StringComparison.OrdinalIgnoreCase) ||
+            Regex.IsMatch(addr, @"\b(11204|11218|11219|11214)\b");
 
+        /// <summary>
+        /// Williamsburg: 11206, 11211, 11249, 11205 (parts)
+        /// </summary>
         private static bool IsWilliamsburg(string addr) =>
             addr.Contains("Williamsburg", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b(11206|11211|11249)\b");
 
+        /// <summary>
+        /// Monsey area: Monsey (10952), Spring Valley (10977), New Square (10954),
+        /// Wesley Hills, Pomona, Airmont, Suffern (10901), Hillburn, Ramapo area
+        /// </summary>
         private static bool IsMonsey(string addr) =>
             addr.Contains("Monsey", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b10952\b");
+            addr.Contains("Spring Valley", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("New Square", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Wesley Hills", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Pomona", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Airmont", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Suffern", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Hillburn", StringComparison.OrdinalIgnoreCase) ||
+            // Monsey: 10952, Spring Valley: 10977, New Square: 10954, Suffern: 10901
+            Regex.IsMatch(addr, @"\b(10952|10977|10954|10901|10956|10970|10965|10994|10960|10980|10993|10913)\b");
 
+        /// <summary>
+        /// Monroe/Kiryas Joel area: Monroe (10950), Kiryas Joel (10950), Harriman (10926), 
+        /// Chester (10918), Woodbury (10917, 10930)
+        /// </summary>
         private static bool IsMonroe(string addr) =>
             addr.Contains("Monroe", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("Kiryas Joel", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b10950\b");
+            addr.Contains("Harriman", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Chester", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Woodbury", StringComparison.OrdinalIgnoreCase) ||
+            // Monroe/KJ: 10950, Harriman: 10926, Chester: 10918, Woodbury: 10917/10930
+            Regex.IsMatch(addr, @"\b(10950|10926|10918|10917|10930)\b");
 
+        /// <summary>
+        /// Upstate/Catskills: Woodbourne (12788), South Fallsburg (12779), Liberty (12754),
+        /// Monticello (12701), Ellenville (12428), Loch Sheldrake (12759), Hurleyville (12747),
+        /// Swan Lake (12783), Kiamesha Lake (12751), Mountaindale (12763), Woodridge (12789),
+        /// Ferndale (12734), Glen Wild, Bloomingburg, Wurtsboro
+        /// </summary>
         private static bool IsUpstate(string addr) =>
             addr.Contains("Woodbourne", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("South Fallsburg", StringComparison.OrdinalIgnoreCase) ||
@@ -85,43 +147,118 @@ namespace DispatchApp.Server.Services
             addr.Contains("Monticello", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("Ellenville", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("Catskill", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b(12788|12779|12754|12701|12428)\b");
+            addr.Contains("Loch Sheldrake", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Hurleyville", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Swan Lake", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Kiamesha", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Mountaindale", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Woodridge", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Ferndale", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Glen Wild", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Bloomingburg", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Wurtsboro", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Fallsburg", StringComparison.OrdinalIgnoreCase) ||
+            // 12788 Woodbourne, 12779 S.Fallsburg, 12754 Liberty, 12701 Monticello,
+            // 12428 Ellenville, 12759 Loch Sheldrake, 12747 Hurleyville, 12783 Swan Lake,
+            // 12751 Kiamesha, 12763 Mountaindale, 12789 Woodridge, 12734 Ferndale,
+            // 12780 Bloomingburg, 12790 Wurtsboro
+            Regex.IsMatch(addr, @"\b(12788|12779|12754|12701|12428|12759|12747|12783|12751|12763|12789|12734|12780|12790)\b");
 
+        /// <summary>
+        /// Manhattan: All NYC Manhattan addresses
+        /// Manhattan zips: 10001-10282 (pattern 100xx, 101xx, 102xx up to 10282)
+        /// </summary>
         private static bool IsManhattan(string addr) =>
             addr.Contains("Manhattan", StringComparison.OrdinalIgnoreCase) ||
-            addr.Contains("New York, NY", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b10[0-2]\d{2}\b");
+            (addr.Contains("New York", StringComparison.OrdinalIgnoreCase) &&
+             addr.Contains("NY", StringComparison.OrdinalIgnoreCase) &&
+             !addr.Contains("Brooklyn", StringComparison.OrdinalIgnoreCase) &&
+             !addr.Contains("Queens", StringComparison.OrdinalIgnoreCase) &&
+             !addr.Contains("Bronx", StringComparison.OrdinalIgnoreCase) &&
+             !addr.Contains("Staten Island", StringComparison.OrdinalIgnoreCase)) ||
+            // Manhattan zips: 10001-10282
+            Regex.IsMatch(addr, @"\b(100\d{2}|101\d{2}|102[0-7]\d|1028[0-2])\b");
 
+        /// <summary>
+        /// Staten Island: All Staten Island addresses
+        /// Staten Island zips: 10301-10314
+        /// </summary>
         private static bool IsStatenIsland(string addr) =>
             addr.Contains("Staten Island", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b103\d{2}\b");
+            Regex.IsMatch(addr, @"\b103(0[1-9]|1[0-4])\b");
 
+        /// <summary>
+        /// JFK Airport: John F. Kennedy International Airport
+        /// Address patterns: JFK, John F Kennedy, Kennedy Airport
+        /// Zip: 11430 (Jamaica, Queens - JFK area)
+        /// </summary>
         private static bool IsJFK(string addr) =>
             addr.Contains("JFK", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("John F. Kennedy", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("John F Kennedy", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("Kennedy Airport", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("Kennedy International", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b11430\b");
 
+        /// <summary>
+        /// LGA Airport: LaGuardia Airport
+        /// Address patterns: LGA, LaGuardia, La Guardia
+        /// Zip: 11371 (Flushing/East Elmhurst - LGA area)
+        /// </summary>
         private static bool IsLGA(string addr) =>
             addr.Contains("LGA", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("LaGuardia", StringComparison.OrdinalIgnoreCase) ||
+            addr.Contains("La Guardia", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b11371\b");
 
+        /// <summary>
+        /// EWR Airport: Newark Liberty International Airport
+        /// Address patterns: EWR, Newark Airport, Newark Liberty
+        /// Zip: 07114 (Newark Airport area)
+        /// Note: Must check for "Airport" with Newark to avoid matching Newark city addresses
+        /// </summary>
         private static bool IsEWR(string addr) =>
             addr.Contains("EWR", StringComparison.OrdinalIgnoreCase) ||
-            addr.Contains("Newark", StringComparison.OrdinalIgnoreCase) && addr.Contains("Airport", StringComparison.OrdinalIgnoreCase) ||
+            (addr.Contains("Newark", StringComparison.OrdinalIgnoreCase) &&
+             addr.Contains("Airport", StringComparison.OrdinalIgnoreCase)) ||
             addr.Contains("Newark Liberty", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b07114\b");
 
+        /// <summary>
+        /// PHL Airport: Philadelphia International Airport
+        /// Address patterns: PHL, Philadelphia Airport, Philadelphia International
+        /// Zip: 19153 (Philadelphia Airport area)
+        /// Note: Must check for "Airport" or "International" with Philadelphia to avoid matching Philly city addresses
+        /// </summary>
+        private static bool IsPHL(string addr) =>
+            addr.Contains("PHL", StringComparison.OrdinalIgnoreCase) ||
+            (addr.Contains("Philadelphia", StringComparison.OrdinalIgnoreCase) &&
+             addr.Contains("Airport", StringComparison.OrdinalIgnoreCase)) ||
+            (addr.Contains("Philadelphia", StringComparison.OrdinalIgnoreCase) &&
+             addr.Contains("International", StringComparison.OrdinalIgnoreCase)) ||
+            Regex.IsMatch(addr, @"\b19153\b");
+
+        /// <summary>
+        /// Philadelphia area: All Philadelphia addresses (city, not airport)
+        /// Philly zips: 19xxx range
+        /// </summary>
         private static bool IsPhilly(string addr) =>
             addr.Contains("Philadelphia", StringComparison.OrdinalIgnoreCase) ||
             addr.Contains("Philly", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b19\d{3}\b");
 
+        /// <summary>
+        /// Passaic: Passaic city, NJ
+        /// Zip: 07055
+        /// </summary>
         private static bool IsPassaic(string addr) =>
             addr.Contains("Passaic", StringComparison.OrdinalIgnoreCase) ||
-            Regex.IsMatch(addr, @"\b07055\b");
+            Regex.IsMatch(addr, @"\b07055|b07054\b");
 
+        /// <summary>
+        /// Linden: Linden city, NJ
+        /// Zip: 07036
+        /// </summary>
         private static bool IsLinden(string addr) =>
             addr.Contains("Linden", StringComparison.OrdinalIgnoreCase) ||
             Regex.IsMatch(addr, @"\b07036\b");
@@ -898,16 +1035,16 @@ namespace DispatchApp.Server.Services
                 // 4. Apply minimum fare ($65 for local rides or trips < 1 hour one-way) if not already applied
                 if (!result.MinimumFareApplied)
                 {
-                    int effectiveDuration = result.EstimatedDurationMinutes > 0 
-                        ? result.EstimatedDurationMinutes 
+                    int effectiveDuration = result.EstimatedDurationMinutes > 0
+                        ? result.EstimatedDurationMinutes
                         : 30; // Assume 30 min if unknown for minimum check
-                    
+
                     // Check if local ride (same origin and destination area)
                     bool isLocalRide = originLocation == destinationLocation && originLocation != "UNKNOWN";
-                    
+
                     // Apply minimum fare if: local ride OR under 1 hour (one-way) AND calculated price is less than minimum
                     bool shouldApplyMinimum = !isRoundTrip && (isLocalRide || effectiveDuration < 60);
-                    
+
                     if (shouldApplyMinimum && result.BasePrice < 65)
                     {
                         result.MinimumFareApplied = true;

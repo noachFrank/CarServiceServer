@@ -62,7 +62,6 @@ namespace DispatchApp.Server.Hubs
 
             foreach (var driverId in expiredDrivers)
             {
-                Console.WriteLine($"Driver {driverId} heartbeat expired - marking inactive in database");
                 _driverHeartbeats.TryRemove(driverId, out _);
                 _driverStatuses.TryRemove(driverId, out _);
                 // Note: Do NOT remove from _driverConnections - they can still receive messages

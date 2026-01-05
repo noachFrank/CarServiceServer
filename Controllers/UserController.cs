@@ -46,15 +46,15 @@ namespace DispatchApp.Server.Controllers
                 else if (request.UserType.ToLower() == "driver")
                     driver = user.GetDriverByNameOrEmail(request.NameOrEmail);
 
-                var storedHash = dispatcher.IsNull() ? driver.IsNull() ? null : driver.Password : dispatcher.Password;
+                var storedHash = dispatcher == null ? driver == null ? null : driver.Password : dispatcher.Password;
 
-                if (!storedHash.IsNull() && storedHash.Length > 0 && PasswordHelper.VerifyPassword(request.Password, storedHash))
+                if (storedHash != null && storedHash.Length > 0 && PasswordHelper.VerifyPassword(request.Password, storedHash))
                 {
                     // Check if worker has been fired (EndDate is set)
                     var isFired = false;
-                    if (!dispatcher.IsNull() && dispatcher.EndDate != null)
+                    if (dispatcher != null && dispatcher.EndDate != null)
                         isFired = true;
-                    if (!driver.IsNull() && driver.EndDate != null)
+                    if (driver != null && driver.EndDate != null)
                         isFired = true;
 
                     if (isFired)
@@ -69,9 +69,9 @@ namespace DispatchApp.Server.Controllers
                     var token = _jwtService.GenerateToken(userId, name, userType, isAdmin);
 
                     // Log the login
-                    if (!dispatcher.IsNull())
+                    if (dispatcher != null)
                         user.AddLoginEntry(dispatcher.GetType().Name.ToString(), dispatcher.Id);
-                    else if (!driver.IsNull())
+                    else if (driver != null)
                         user.AddLoginEntry(driver.GetType().Name.ToString(), driver.Id);
 
                     // Return token and user details
@@ -99,15 +99,32 @@ namespace DispatchApp.Server.Controllers
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous] // Allow expired tokens to be refreshed
         public IActionResult RefreshToken()
         {
             try
             {
-                // Get the current user's claims from the authenticated request
-                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                var nameClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name);
-                var userTypeClaim = User.FindFirst("userType");
-                var roleClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Role);
+                // Get the token from Authorization header and validate it (allowing expired)
+                var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+                if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                {
+                    return Unauthorized("No token provided");
+                }
+
+                var token = authHeader.Substring("Bearer ".Length).Trim();
+
+                // Validate the token but allow expired tokens
+                var principal = _jwtService.ValidateTokenAllowExpired(token);
+                if (principal == null)
+                {
+                    return Unauthorized("Invalid token");
+                }
+
+                // Get the user's claims from the validated token
+                var userIdClaim = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                var nameClaim = principal.FindFirst(System.Security.Claims.ClaimTypes.Name);
+                var userTypeClaim = principal.FindFirst("userType");
+                var roleClaim = principal.FindFirst(System.Security.Claims.ClaimTypes.Role);
 
                 if (userIdClaim == null || nameClaim == null || userTypeClaim == null)
                 {
@@ -766,12 +783,10 @@ namespace DispatchApp.Server.Controllers
                 var userRepo = new UserRepo(_connectionString);
                 userRepo.UpdateDriverPushToken(request.DriverId, request.PushToken);
 
-                Console.WriteLine($"✅ Push token registered for driver {request.DriverId}");
                 return Ok(new { success = true, message = "Push token registered successfully" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error registering push token: {ex.Message}");
                 return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
@@ -793,12 +808,10 @@ namespace DispatchApp.Server.Controllers
                 var userRepo = new UserRepo(_connectionString);
                 userRepo.UpdateDriverPushToken(driverId, null);
 
-                Console.WriteLine($"Push token removed for driver {driverId}");
                 return Ok(new { success = true, message = "Push token removed successfully" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error removing push token: {ex.Message}");
                 return StatusCode(500, new { success = false, error = ex.Message });
             }
         }
@@ -810,11 +823,8 @@ namespace DispatchApp.Server.Controllers
         [HttpPost("UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            Console.WriteLine($"UpdatePassword called - UserId: {request?.UserId}, UserType: {request?.UserType}");
-
             if (request == null || request.UserId == 0 || string.IsNullOrEmpty(request.UserType))
             {
-                Console.WriteLine($"Bad request - missing required fields");
                 return BadRequest(new { success = false, message = "Missing required fields" });
             }
 
@@ -822,7 +832,6 @@ namespace DispatchApp.Server.Controllers
 
             // Verify old password first
             var isValid = await userRepo.VerifyPassword(request.UserId, request.UserType, request.OldPassword);
-            Console.WriteLine($"Password verification result: {isValid}");
 
             if (!isValid)
             {
@@ -842,7 +851,6 @@ namespace DispatchApp.Server.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
-            Console.WriteLine($"ForgotPassword called - UserId: {request?.UserId}, UserType: {request?.UserType}");
             var userRepo = new UserRepo(_connectionString);
 
             // Get user email
@@ -854,11 +862,9 @@ namespace DispatchApp.Server.Controllers
 
             // Generate new random password
             var newPassword = _passwordService.GeneratePassword();
-            Console.WriteLine($"Generated new password: '{newPassword}' (length: {newPassword.Length})");
 
             // Update password in database
             var result = await userRepo.UpdatePassword(request.UserId, request.UserType, newPassword);
-            Console.WriteLine($"Password update result: {result}");
 
             if (!result)
             {
@@ -869,13 +875,11 @@ namespace DispatchApp.Server.Controllers
             try
             {
                 await _passwordService.SendPasswordResetEmail(email, newPassword);
-                Console.WriteLine($"Password reset email sent to: {email}");
                 return Ok(new { success = true, message = "New password has been sent to your email" });
             }
             catch (Exception ex)
             {
                 // Password was changed but email failed - log this
-                Console.WriteLine($"Password reset successful but email failed: {ex.Message}");
                 return Ok(new { success = true, message = "Password reset successful. Please contact admin for new password." });
             }
         }

@@ -11,5 +11,6 @@ namespace DispatchApp.Server.Data.DataTypes
         public List<Ride> TodaysRides { get; set; }
         public List<Driver> ActiveDrivers { get; set; }
         public List<Driver> DriversOnJob { get; set; }
+        public List<Driver> UnsettledDrivers { get; set; }
     }
 }

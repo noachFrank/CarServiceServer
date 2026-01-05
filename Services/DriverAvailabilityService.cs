@@ -44,7 +44,6 @@ namespace DispatchApp.Server.Services
             _longCallThresholdMinutes = configuration.GetValue<int>("DriverAvailability:LongCallThresholdMinutes", 45);
             _gracePeriodScalingEnabled = configuration.GetValue<bool>("DriverAvailability:GracePeriodScalingEnabled", true);
 
-            Console.WriteLine($"DriverAvailability Settings: DefaultTravel={_defaultTravelTimeMinutes}min, BaseGrace={_baseGracePeriodMinutes}min, LongCallThreshold={_longCallThresholdMinutes}min, ScalingEnabled={_gracePeriodScalingEnabled}");
         }
 
         /// <summary>

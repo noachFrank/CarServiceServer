@@ -26,62 +26,6 @@ namespace DispatchApp.Server.Controllers
 
         #region add/edit
 
-        [HttpPost("AddRide")]
-        public void AddRide([FromBody] Ride ride)
-        {
-            try
-            {
-                var rideRepo = new RideRepo(_connectionString);
-                rideRepo.AddRide(ride);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPost("AssignRide")]
-        public void AssignRide([FromBody] Assignment assignment)
-        {
-            try
-            {
-                var rideRepo = new RideRepo(_connectionString);
-                rideRepo.AssignRide(assignment.RideId, assignment.AssignToId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPost("CancelDriver")]
-        public void CancelDriver([FromBody] int rideId)
-        {
-            try
-            {
-                var rideRepo = new RideRepo(_connectionString);
-                rideRepo.CancelDriver(rideId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPost("CancelRide")]
-        public void CancelRide([FromBody] int rideId)
-        {
-            try
-            {
-                var rideRepo = new RideRepo(_connectionString);
-                rideRepo.CancelRide(rideId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         [HttpPost("CancelRecurring")]
         public void CancelRecurring([FromBody] int rideId)
         {
@@ -194,6 +138,37 @@ namespace DispatchApp.Server.Controllers
             }
         }
 
+        [HttpPost("SettleDriver")]
+        public IActionResult SettleDriver([FromBody] int driverId)
+        {
+            try
+            {
+                var rideRepo = new RideRepo(_connectionString);
+                rideRepo.SettleDriverRides(driverId);
+                return Ok(new { success = true, message = "Driver rides settled successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("SettleRide")]
+        public IActionResult SettleRide([FromBody] int rideId)
+        {
+            try
+            {
+                var rideRepo = new RideRepo(_connectionString);
+                rideRepo.SettleRide(rideId);
+                return Ok(new { success = true, message = "Ride settled successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
         #endregion
 
         #region Dashboard Metrics
@@ -214,7 +189,8 @@ namespace DispatchApp.Server.Controllers
                     RecurringRidesThisWeek = rideRepo.GetRecurringRidesThisWeek(),
                     TodaysRides = rideRepo.GetTodaysRides(),
                     ActiveDrivers = userRepo.GetActiveDrivers(),
-                    DriversOnJob = userRepo.GetDriversOnJob()
+                    DriversOnJob = userRepo.GetDriversOnJob(),
+                    UnsettledDrivers = userRepo.GetUnsettledDrivers()
                 };
 
                 return Ok(metrics);
@@ -300,6 +276,37 @@ namespace DispatchApp.Server.Controllers
             }
         }
 
+        [HttpGet("Dashboard/UnsettledDrivers")]
+        public IActionResult GetDashboardUnsettledDrivers()
+        {
+            try
+            {
+                var userRepo = new UserRepo(_connectionString);
+                var drivers = userRepo.GetUnsettledDrivers();
+                return Ok(drivers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("UnsettledRides/{driverId}")]
+        public IActionResult GetUnsettledRidesByDriver(int driverId)
+        {
+            try
+            {
+                var rideRepo = new RideRepo(_connectionString);
+                var rides = rideRepo.GetUnsettledRidesByDriver(driverId);
+                return Ok(rides);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
         #endregion
 
         #region Get rides
@@ -343,8 +350,6 @@ namespace DispatchApp.Server.Controllers
                 // Filter out rides that the driver cannot take due to schedule conflicts
                 var availabilityService = new DriverAvailabilityService(_connectionString, _configuration);
                 var availableRides = open.Where(ride => availabilityService.IsDriverAvailableForCall(userId, ride)).ToList();
-
-                Console.WriteLine($"GetOpenRides for driver {userId}: {open.Count} total open rides, {availableRides.Count} available after schedule check");
 
                 if (availableRides.Any())
                 {
@@ -615,7 +620,6 @@ namespace DispatchApp.Server.Controllers
 
                 if (result?.Status != "OK")
                 {
-                    Console.WriteLine($"Google Maps API error: {result?.Status} - {result?.Error_message}");
                     return Ok(new
                     {
                         distance = (string)null,
@@ -647,7 +651,6 @@ namespace DispatchApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CalculateDistance error: {ex.Message}");
                 return StatusCode(500, new { error = ex.Message });
             }
         }
@@ -725,7 +728,6 @@ namespace DispatchApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CalculatePrice error: {ex.Message}");
                 return StatusCode(500, new { error = ex.Message });
             }
         }

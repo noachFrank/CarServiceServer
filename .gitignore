@@ -1,0 +1,49 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local settings (NEVER commit - contains secrets)
+appsettings.Local.json
+appsettings.Production.json
+
+# Visual Studio files
+.vs/
+*.csproj.user
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# macOS
+.DS_Store
+
+# Log files
+*.log
+logs/
+
+# Package manager lock files (optional, uncomment if needed)
+# package-lock.json
+
+# Publish profiles
+Properties/PublishProfiles/
+
+# Database files
+*.mdf
+*.ldf
+# Certificate files
+*.p12
+*.pfx
+*.pem

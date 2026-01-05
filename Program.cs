@@ -15,20 +15,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
-// Configure Kestrel to listen on HTTP for mobile development
-builder.WebHost.ConfigureKestrel(serverOptions =>
+// Configure Kestrel - only override in development
+if (builder.Environment.IsDevelopment())
 {
-    // HTTP for mobile app development (no certificate needed)
-    serverOptions.ListenAnyIP(5062);
-    Console.WriteLine("✅ Server listening on http://0.0.0.0:5062");
-
-    // HTTPS for web app (optional)
-    serverOptions.ListenAnyIP(7170, listenOptions =>
+    builder.WebHost.ConfigureKestrel(serverOptions =>
     {
-        listenOptions.UseHttps();
+        // HTTP for mobile app development (no certificate needed)
+        serverOptions.ListenAnyIP(5062);
+        // HTTPS for web app (optional)
+        serverOptions.ListenAnyIP(7170, listenOptions =>
+        {
+            listenOptions.UseHttps();
+        });
     });
-    Console.WriteLine("✅ Server listening on https://0.0.0.0:7170");
-});
+}
+// In production, use environment variables (ASPNETCORE_URLS) or hosting configuration for URLs
 
 // Add services to the container
 builder.Services.AddControllers(options =>
@@ -41,29 +42,59 @@ builder.Services.AddControllers(options =>
          options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
      });
 
-// Add CORS policy - Allow mobile apps and web apps
+// Add CORS policy - configurable via appsettings
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? new string[] { };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins(
-                "https://localhost:56554",
-                "http://localhost:56554",
-                "http://localhost:5173",
-                "https://localhost:5173",
-                "http://192.168.1.41:8081",  // Expo dev server
-                "exp://192.168.1.41:8081")   // Expo app
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        if (builder.Environment.IsDevelopment())
+        {
+            // Development: allow localhost and local network
+            policy.WithOrigins(
+                    "https://localhost:56554",
+                    "http://localhost:56554",
+                    "http://localhost:5173",
+                    "https://localhost:5173",
+                    "http://192.168.1.41:8081",  // Expo dev server
+                    "exp://192.168.1.41:8081")   // Expo app
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else if (allowedOrigins.Length > 0)
+        {
+            // Production: use configured origins from appsettings
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // Fallback: restrict to same origin
+            policy.AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
     });
 
-    // More permissive policy for mobile development
+    // Mobile policy - more permissive but still controlled
     options.AddPolicy("AllowMobile", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+        else
+        {
+            // Production: mobile apps don't send Origin headers, so this works
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
     });
 });
 
@@ -119,17 +150,20 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add SignalR with detailed logging
+// Add SignalR
 builder.Services.AddSignalR(options =>
 {
-    options.EnableDetailedErrors = true;
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment(); // Only in development
     options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
 });
 
-// Add logging for SignalR
-builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
-builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
+// Add detailed logging for SignalR only in development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+    builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
+}
 
 
 // Register the DbContext with the connection string from configuration
@@ -144,8 +178,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
+else
+{
+    // Enable HTTPS redirection in production
+    app.UseHttpsRedirection();
+}
 
 // IMPORTANT: Add CORS before Authorization
 app.UseCors("AllowReactApp");

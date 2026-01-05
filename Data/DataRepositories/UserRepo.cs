@@ -75,7 +75,6 @@ namespace DispatchApp.Server.Data.DataRepositories
 
         #region drivers 
 
-
         public List<Driver> GetAllDrivers()
         {
             using (var context = new DispatchDbContext(_connectionString))
@@ -163,8 +162,26 @@ namespace DispatchApp.Server.Data.DataRepositories
             using (var context = new DispatchDbContext(_connectionString))
             {
                 var activeRides = context.Rides.Where(x => x.DropOffTime == null && (x.PickupTime != null || x.ScheduledFor <= DateTime.UtcNow));
-               
+
                 return context.Drivers.Include(d => d.Cars).Where(x => activeRides.Any(y => (y.Reassigned && y.ReassignedToId == x.Id) || (!y.Reassigned && y.AssignedToId == x.Id))).ToList();
+            }
+        }
+
+        public List<Driver> GetUnsettledDrivers()
+        {
+            using (var context = new DispatchDbContext(_connectionString))
+            {
+                var unsettledDriverIds = context.Rides
+                    .Where(r => !r.Settled && r.DropOffTime != null && !r.Canceled)
+                    .Select(r => r.Reassigned ? r.ReassignedToId : r.AssignedToId)
+                    .Where(id => id != null)
+                    .Distinct()
+                    .ToList();
+
+                return context.Drivers
+                    .Include(d => d.Cars)
+                    .Where(d => unsettledDriverIds.Contains(d.Id))
+                    .ToList();
             }
         }
 
@@ -181,7 +198,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             using (var context = new DispatchDbContext(_connectionString))
             {
                 var driver = GetDriverById(driverId);
-                var ride = context.Rides.FirstOrDefault(x => ((!x.Reassigned && x.AssignedToId == driverId) || (x.Reassigned && x.ReassignedToId == driverId)) 
+                var ride = context.Rides.FirstOrDefault(x => ((!x.Reassigned && x.AssignedToId == driverId) || (x.Reassigned && x.ReassignedToId == driverId))
                                                              && x.DropOffTime == null && x.ScheduledFor <= DateTime.UtcNow);
 
                 if (driver == null)
@@ -197,6 +214,9 @@ namespace DispatchApp.Server.Data.DataRepositories
                 return "Unknown";
             }
         }
+
+
+
 
 
 
@@ -493,13 +513,11 @@ namespace DispatchApp.Server.Data.DataRepositories
 
                 if (driver == null)
                 {
-                    Console.WriteLine($"Cannot update push token: Driver {driverId} not found");
                     return;
                 }
 
                 driver.ExpoPushToken = pushToken;
                 context.SaveChanges();
-                Console.WriteLine($"Push token updated for driver {driverId}");
             }
         }
 
@@ -548,38 +566,25 @@ namespace DispatchApp.Server.Data.DataRepositories
                     var dispatcher = await context.Dispatchers.FirstOrDefaultAsync(x => x.Id == userId);
                     if (dispatcher != null)
                     {
-                        Console.WriteLine($"Found dispatcher. Stored hash starts with: {dispatcher.Password?.Substring(0, Math.Min(10, dispatcher.Password?.Length ?? 0))}...");
-                        Console.WriteLine($"Stored hash length: {dispatcher.Password?.Length}");
-                        Console.WriteLine($"Password provided: '{password}'");
-                        Console.WriteLine($"Password length: {password?.Length}");
-
                         try
                         {
                             var x = PasswordHelper.VerifyPassword(password, dispatcher.Password);
-                            Console.WriteLine($"BCrypt verification result: {x}");
                             return x;
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"BCrypt verification failed with error: {ex.Message}");
                             return false;
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Dispatcher with ID {userId} not found");
                     }
                     break;
                 case "driver":
                     var driver = await context.Drivers.FirstOrDefaultAsync(x => x.Id == userId);
                     if (driver != null)
                     {
-                        Console.WriteLine($"Found driver. Stored hash starts with: {driver.Password?.Substring(0, Math.Min(10, driver.Password?.Length ?? 0))}...");
                         return PasswordHelper.VerifyPassword(password, driver.Password);
                     }
                     break;
                 default:
-                    Console.WriteLine($"Unknown userType: {userType}");
                     return false;
             }
             return false;

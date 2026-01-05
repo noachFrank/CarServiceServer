@@ -1,3 +1,4 @@
+using Square.Models;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -18,6 +19,7 @@ namespace DispatchApp.Server.Data.DataTypes
         public decimal Tip { get; set; }
         public decimal WaitTimeAmount { get; set; }
         public decimal? DriversCompensation { get; set; }
+        public bool Settled { get; set; }
         public int? AssignedToId { get; set; }
         public int? ReassignedToId { get; set; }
         public string? Notes { get; set; }

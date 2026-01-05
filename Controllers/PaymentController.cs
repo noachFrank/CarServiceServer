@@ -27,11 +27,6 @@ namespace DispatchApp.Server.Controllers
         {
             try
             {
-                Console.WriteLine($"=== TOKENIZE AND CHARGE REQUEST ===");
-                Console.WriteLine($"Ride ID: {request.RideId}");
-                Console.WriteLine($"Amount: ${request.Amount}");
-                Console.WriteLine($"Card: ****{request.CardNumber?.Substring(Math.Max(0, request.CardNumber.Length - 4))}");
-
                 // Validate request
                 if (string.IsNullOrEmpty(request.CardNumber))
                 {
@@ -91,7 +86,6 @@ namespace DispatchApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error in TokenizeAndChargeCard: {ex.Message}");
                 return StatusCode(500, new
                 {
                     success = false,
@@ -110,11 +104,6 @@ namespace DispatchApp.Server.Controllers
         {
             try
             {
-                Console.WriteLine($"=== CHARGE CARD REQUEST ===");
-                Console.WriteLine($"Ride ID: {request.RideId}");
-                Console.WriteLine($"Amount: ${request.Amount}");
-                Console.WriteLine($"Token: {request.PaymentTokenId}");
-
                 // Validate request
                 if (string.IsNullOrEmpty(request.PaymentTokenId))
                 {
@@ -155,7 +144,6 @@ namespace DispatchApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error in ChargeCard: {ex.Message}");
                 return StatusCode(500, new
                 {
                     success = false,
@@ -188,7 +176,6 @@ namespace DispatchApp.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error in VerifyToken: {ex.Message}");
                 return StatusCode(500, new
                 {
                     success = false,

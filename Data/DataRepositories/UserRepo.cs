@@ -44,11 +44,15 @@ namespace DispatchApp.Server.Data.DataRepositories
 
         public Dispatcher GetDispatcherByNameOrEmail(string nameOrEmail)
         {
+            if (string.IsNullOrEmpty(nameOrEmail))
+                return null;
+
             using (var context = new DispatchDbContext(_connectionString))
             {
-                return context.Dispatchers.FirstOrDefault(x => (x.UserName != null && x.UserName.ToLower() == nameOrEmail.ToLower())
-                                                            || (x.Name != null && x.Name.ToLower() == nameOrEmail.ToLower())
-                                                            || (x.Email != null && x.Email.ToLower() == nameOrEmail.ToLower()));
+                var searchTerm = nameOrEmail.ToLower();
+                return context.Dispatchers.FirstOrDefault(x => (x.UserName != null && x.UserName.ToLower() == searchTerm)
+                                                            || (x.Name != null && x.Name.ToLower() == searchTerm)
+                                                            || (x.Email != null && x.Email.ToLower() == searchTerm));
             }
         }
 
@@ -131,11 +135,15 @@ namespace DispatchApp.Server.Data.DataRepositories
 
         public Driver GetDriverByNameOrEmail(string nameOrEmail)
         {
+            if (string.IsNullOrEmpty(nameOrEmail))
+                return null;
+
             using (var context = new DispatchDbContext(_connectionString))
             {
-                return context.Drivers.Include(d => d.Cars).FirstOrDefault(x => x.EndDate == null && ((x.UserName != null && x.UserName.ToLower() == nameOrEmail.ToLower())
-                                                        || (x.Name != null && x.Name.ToLower() == nameOrEmail.ToLower())
-                                                        || (x.Email != null && x.Email.ToLower() == nameOrEmail.ToLower())));
+                var searchTerm = nameOrEmail.ToLower();
+                return context.Drivers.Include(d => d.Cars).FirstOrDefault(x => x.EndDate == null && ((x.UserName != null && x.UserName.ToLower() == searchTerm)
+                                                        || (x.Name != null && x.Name.ToLower() == searchTerm)
+                                                        || (x.Email != null && x.Email.ToLower() == searchTerm)));
             }
         }
 

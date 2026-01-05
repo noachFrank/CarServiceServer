@@ -27,18 +27,53 @@ namespace DispatchApp.Server.Services
         {
             try
             {
-                var subject = "Your Shia's Transportation Dispatcher Account Has Been Created";
+                var subject = $"Your Shia's Transportation {(userType.ToLower() == "dispatcher" ? "Dispatcher" : "Driver")} Account Has Been Created";
+
+                // Different content based on user type
+                string appAccessSection;
+                if (userType.ToLower() == "dispatcher")
+                {
+                    appAccessSection = $@"
+    <div style='background-color: #e8f4fd; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #2196F3;'>
+        <h3 style='margin-top: 0; color: #1976D2;'>📱 Access the Dispatch App</h3>
+        <p>Login to the dispatcher dashboard at:</p>
+        <p><a href='https://www.shiastransportation.com/login' style='color: #1976D2; font-size: 16px;'>https://www.shiastransportation.com/login</a></p>
+        <p style='margin-bottom: 0;'><strong>💡 Tip:</strong> Bookmark this page so you can easily find it again!</p>
+    </div>";
+                }
+                else
+                {
+                    appAccessSection = $@"
+    <div style='background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #4CAF50;'>
+        <h3 style='margin-top: 0; color: #388E3C;'>📱 Download the Driver App</h3>
+        <p>Get the Shia's Transportation Driver app on your phone:</p>
+        <p>
+            <a href='https://play.google.com/store/apps/details?id=com.shiastransportation.driver' style='display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>
+                ▶ Google Play Store
+            </a>
+        </p>
+        <p>
+            <a href='https://apps.apple.com/app/shias-transportation-driver' style='display: inline-block; background-color: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>
+                🍎 Apple App Store
+            </a>
+        </p>
+    </div>";
+                }
+
                 var body = $@"
 <html>
-<body style='font-family: Arial, sans-serif;'>
+<body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
     <h2>Welcome to Shia's Transportation, {recipientName}!</h2>
     <p>Your {userType} account has been created. Here are your login credentials:</p>
     <div style='background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;'>
         <p><strong>Email:</strong> {toEmail}</p>
-        <p><strong>UserName:</strong> {userName}</p>
-        <p><strong>Password:</strong> {password}</p>
+        <p><strong>Username:</strong> {userName}</p>
+        <p><strong>Temporary Password:</strong> {password}</p>
     </div>
-<h3>You can change it after logging in.</h3>
+    
+    <p>⚠️ <strong>Please change your password after your first login.</strong></p>
+
+    {appAccessSection}
 
     <p>If you have any questions, please contact your administrator.</p>
     <br/>

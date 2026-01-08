@@ -18,7 +18,7 @@ namespace DispatchApp.Server.Controllers
         private IConfiguration _configuration;
         private string _connectionString;
         private readonly IHubContext<Dispatch> _hubContext;
-        private readonly PasswordService _passwordService;
+        private readonly EmailService _emailService;
         private readonly JwtService _jwtService;
 
         public UserController(IWebHostEnvironment webHostEnvironment, IConfiguration config, IHubContext<Dispatch> hubContext, JwtService jwtService)
@@ -27,7 +27,7 @@ namespace DispatchApp.Server.Controllers
             _configuration = config;
             _connectionString = config.GetConnectionString("ConStr");
             _hubContext = hubContext;
-            _passwordService = new PasswordService(config);
+            _emailService = new EmailService(config);
             _jwtService = jwtService;
         }
 
@@ -48,7 +48,7 @@ namespace DispatchApp.Server.Controllers
 
                 var storedHash = dispatcher == null ? driver == null ? null : driver.Password : dispatcher.Password;
 
-                if (storedHash != null && storedHash.Length > 0 && PasswordHelper.VerifyPassword(request.Password, storedHash))
+                if (storedHash != null && storedHash.Length > 0 && PasswordService.VerifyPassword(request.Password, storedHash))
                 {
                     // Check if worker has been fired (EndDate is set)
                     var isFired = false;
@@ -196,15 +196,15 @@ namespace DispatchApp.Server.Controllers
 
 
                 // Generate a random password
-                var generatedPassword = _passwordService.GeneratePassword();
+                var generatedPassword = PasswordService.GeneratePassword();
 
                 dispatcher.DateJoined = DateTime.UtcNow;
-                dispatcher.Password = PasswordHelper.HashPassword(generatedPassword);
+                dispatcher.Password = PasswordService.HashPassword(generatedPassword);
 
                 user.AddDispatcher(dispatcher);
 
                 // Send password via email
-                var emailSent = await _passwordService.SendPasswordEmail(
+                var emailSent = await _emailService.SendPasswordEmail(
                     dispatcher.Email,
                     dispatcher.Name,
                     generatedPassword,
@@ -240,15 +240,15 @@ namespace DispatchApp.Server.Controllers
                 driver.UserName = user.CreateUserName(driver.Name);
 
                 // Generate a random password
-                var generatedPassword = _passwordService.GeneratePassword();
+                var generatedPassword = PasswordService.GeneratePassword();
 
                 driver.JoinedDate = DateTime.UtcNow;
-                driver.Password = PasswordHelper.HashPassword(generatedPassword);
+                driver.Password = PasswordService.HashPassword(generatedPassword);
 
                 user.AddDriver(driver);
 
                 // Send password via email
-                var emailSent = await _passwordService.SendPasswordEmail(
+                var emailSent = await _emailService.SendPasswordEmail(
                     driver.Email,
                     driver.Name,
                     generatedPassword,
@@ -405,6 +405,8 @@ namespace DispatchApp.Server.Controllers
         }
 
         #endregion
+
+        #region get
 
         [HttpGet("ActiveDispatchers")]
         public IActionResult GetActiveDispatchers()
@@ -747,6 +749,8 @@ namespace DispatchApp.Server.Controllers
             }
         }
 
+        #endregion
+
         #region Push Notifications
 
         /// <summary>
@@ -861,7 +865,7 @@ namespace DispatchApp.Server.Controllers
             }
 
             // Generate new random password
-            var newPassword = _passwordService.GeneratePassword();
+            var newPassword = PasswordService.GeneratePassword();
 
             // Update password in database
             var result = await userRepo.UpdatePassword(request.UserId, request.UserType, newPassword);
@@ -874,7 +878,7 @@ namespace DispatchApp.Server.Controllers
             // Send email with new password
             try
             {
-                await _passwordService.SendPasswordResetEmail(email, newPassword);
+                await _emailService.SendPasswordResetEmail(email, newPassword);
                 return Ok(new { success = true, message = "New password has been sent to your email" });
             }
             catch (Exception ex)

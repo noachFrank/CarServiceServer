@@ -304,7 +304,7 @@ namespace DispatchApp.Server.Data.DataRepositories
                 if (ride.IsRecurring && ride.RecurringId is int recId)
                 {
                     var recurring = context.Recurrings.FirstOrDefault(r => r.Id == recId);
-                    if (recurring != null && recurring.EndDate.Date >= ride.ScheduledFor.Date)
+                    if (recurring != null && recurring.EndDate.Date >= ride.ScheduledFor.Date.AddDays(7))
                     {
                         var newRide = new Ride
                         {

@@ -4,30 +4,18 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<!-- SPA Proxy disabled - client apps run separately -->
-		<!--<SpaRoot>..\dispatchapp2.web.client</SpaRoot>
-		<SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-		<SpaProxyServerUrl>https://localhost:58549</SpaProxyServerUrl>-->
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
-		<!--<PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-			<Version>8.*-*</Version>
-		</PackageReference>-->
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+		<PackageReference Include="QuestPDF" Version="2024.10.2" />
 		<PackageReference Include="Square" Version="37.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
-
-	<!--<ItemGroup>
-		<ProjectReference Include="..\dispatchapp2.web.client\dispatchapp.client.esproj">
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-		</ProjectReference>
-	</ItemGroup>-->
 
 </Project>

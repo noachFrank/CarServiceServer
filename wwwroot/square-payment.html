@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Payment</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        body.dark-mode .header h1 {
+            color: #fff;
+        }
+        
+        .header .amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+        
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        body.dark-mode .secure-badge {
+            color: #aaa;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        
+        body.dark-mode .form-group label {
+            color: #ddd;
+        }
+        
+        /* Square Web Payments SDK styles */
+        .sq-card-wrapper {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        
+        body.dark-mode .sq-card-wrapper {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+        
+        #card-container {
+            min-height: 90px;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        body.dark-mode .btn-cancel {
+            background: #444;
+            color: #fff;
+        }
+        
+        .btn-pay {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .btn-pay:hover:not(:disabled) {
+            background: #1565c0;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        body.dark-mode .error-message {
+            background: #4a1c1c;
+            color: #ff8a80;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #1976d2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .processing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        body.dark-mode .processing {
+            background: rgba(0,0,0,0.9);
+        }
+        
+        .processing.show {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading secure payment form...</p>
+        </div>
+        
+        <div id="payment-form" style="display: none;">
+            <div class="header">
+                <h1>Enter Card Details</h1>
+                <div class="amount" id="amount-display">$0.00</div>
+                <div class="secure-badge">
+                    🔒 Secured by Square
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Card Information</label>
+                <div class="sq-card-wrapper">
+                    <div id="card-container"></div>
+                </div>
+            </div>
+            
+            <div class="error-message" id="error-message"></div>
+            
+            <div class="button-row">
+                <button type="button" class="btn-cancel" onclick="handleCancel()">Cancel</button>
+                <button type="button" class="btn-pay" id="pay-button" onclick="handlePayment()">
+                    Pay Now
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="processing" id="processing">
+        <div class="spinner"></div>
+        <p>Processing payment...</p>
+    </div>
+
+    <!-- Square Web Payments SDK - loaded dynamically based on environment -->
+    <script>
+        // Determine environment from URL params
+        const urlParamsInit = new URLSearchParams(window.location.search);
+        const isProduction = urlParamsInit.get('production') === 'true';
+        
+        // Load appropriate Square SDK
+        const script = document.createElement('script');
+        script.src = isProduction 
+            ? 'https://web.squarecdn.com/v1/square.js'
+            : 'https://sandbox.web.squarecdn.com/v1/square.js';
+        script.onload = () => {
+            console.log('Square SDK loaded:', isProduction ? 'production' : 'sandbox');
+            initializeSquare();
+        };
+        script.onerror = () => {
+            console.error('Failed to load Square SDK');
+            showError('Failed to load payment system. Please try again.');
+        };
+        document.head.appendChild(script);
+    </script>
+    
+    <script>
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = parseFloat(urlParams.get('amount')) || 0;
+        const rideId = urlParams.get('rideId') || '';
+        const darkMode = urlParams.get('darkMode') === 'true';
+        const appId = urlParams.get('appId') || 'sq0idp-HT7cBlmVVPanBhG6ls7vMw';
+        const locationId = urlParams.get('locationId') || 'L8Y3SJQSQPBZJ'; // Your Square location ID
+        
+        // Apply dark mode
+        if (darkMode) {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // Display amount
+        document.getElementById('amount-display').textContent = '$' + amount.toFixed(2);
+        
+        let card;
+        let payments;
+        
+        // Initialize Square
+        async function initializeSquare() {
+            try {
+                payments = Square.payments(appId, locationId);
+                
+                card = await payments.card({
+                    style: {
+                        '.input-container': {
+                            borderColor: darkMode ? '#555' : '#ddd',
+                            borderRadius: '6px'
+                        },
+                        '.input-container.is-focus': {
+                            borderColor: '#1976d2'
+                        },
+                        '.input-container.is-error': {
+                            borderColor: '#c62828'
+                        },
+                        '.message-text': {
+                            color: darkMode ? '#ff8a80' : '#c62828'
+                        },
+                        '.message-icon': {
+                            color: darkMode ? '#ff8a80' : '#c62828'
+                        },
+                        input: {
+                            backgroundColor: darkMode ? '#2a2a2a' : '#fff',
+                            color: darkMode ? '#fff' : '#333',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                        },
+                        'input::placeholder': {
+                            color: darkMode ? '#888' : '#aaa'
+                        }
+                    }
+                });
+                
+                await card.attach('#card-container');
+                
+                // Show form, hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('payment-form').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Failed to initialize Square:', error);
+                showError('Failed to load payment form. Please try again.');
+                sendToApp({ type: 'error', error: error.message, code: 'INIT_ERROR' });
+            }
+        }
+        
+        async function handlePayment() {
+            const payButton = document.getElementById('pay-button');
+            payButton.disabled = true;
+            document.getElementById('processing').classList.add('show');
+            hideError();
+            
+            try {
+                const result = await card.tokenize();
+                
+                if (result.status === 'OK') {
+                    console.log('Token received:', result.token);
+                    
+                    // Send token back to React Native app
+                    sendToApp({
+                        type: 'success',
+                        token: result.token,
+                        cardDetails: {
+                            brand: result.details?.card?.brand || 'Unknown',
+                            lastFour: result.details?.card?.last4 || '****',
+                            expMonth: result.details?.card?.expMonth,
+                            expYear: result.details?.card?.expYear
+                        }
+                    });
+                } else {
+                    let errorMessage = 'Card validation failed';
+                    if (result.errors && result.errors.length > 0) {
+                        errorMessage = result.errors.map(e => e.message).join('. ');
+                    }
+                    showError(errorMessage);
+                    sendToApp({ type: 'error', error: errorMessage, code: 'VALIDATION_ERROR' });
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showError(error.message || 'Payment failed. Please try again.');
+                sendToApp({ type: 'error', error: error.message, code: 'PAYMENT_ERROR' });
+            } finally {
+                payButton.disabled = false;
+                document.getElementById('processing').classList.remove('show');
+            }
+        }
+        
+        function handleCancel() {
+            sendToApp({ type: 'cancel' });
+        }
+        
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+        
+        function sendToApp(data) {
+            // Send message to React Native WebView
+            if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify(data));
+            } else {
+                // Fallback for testing in browser
+                console.log('Would send to app:', data);
+            }
+        }
+        
+        // Initialize when page loads
+        initializeSquare();
+    </script>
+</body>
+</html>

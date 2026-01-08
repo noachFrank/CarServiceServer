@@ -1,5 +1,6 @@
 ﻿using DispatchApp.Server.data;
 using DispatchApp.Server.Data.DataTypes;
+using DispatchApp.Server.Services;
 using DispatchApp.Server.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -576,7 +577,7 @@ namespace DispatchApp.Server.Data.DataRepositories
                     {
                         try
                         {
-                            var x = PasswordHelper.VerifyPassword(password, dispatcher.Password);
+                            var x = PasswordService.VerifyPassword(password, dispatcher.Password);
                             return x;
                         }
                         catch (Exception ex)
@@ -589,7 +590,7 @@ namespace DispatchApp.Server.Data.DataRepositories
                     var driver = await context.Drivers.FirstOrDefaultAsync(x => x.Id == userId);
                     if (driver != null)
                     {
-                        return PasswordHelper.VerifyPassword(password, driver.Password);
+                        return PasswordService.VerifyPassword(password, driver.Password);
                     }
                     break;
                 default:
@@ -603,7 +604,7 @@ namespace DispatchApp.Server.Data.DataRepositories
             using var context = new DispatchDbContext(_connectionString);
 
             // Hash the new password
-            var hashedPassword = PasswordHelper.HashPassword(newPassword);
+            var hashedPassword = PasswordService.HashPassword(newPassword);
 
             switch (userType.ToLower())
             {

@@ -138,17 +138,88 @@ namespace DispatchApp.Server.Controllers
             }
         }
 
-        [HttpPost("SettleDriver")]
-        public IActionResult SettleDriver([FromBody] int driverId)
+        [HttpPost("SettleUpDriver")]
+        public async Task<IActionResult> SettleUpDriver([FromBody] int driverId)
         {
             try
             {
                 var rideRepo = new RideRepo(_connectionString);
+                var userRepo = new UserRepo(_connectionString);
+
+                // Get the driver info
+                var driver = userRepo.GetDriverById(driverId);
+                if (driver == null)
+                {
+                    return NotFound($"Driver with ID {driverId} not found");
+                }
+
+                // Get unsettled rides before settling them
+                var unsettledRides = rideRepo.GetUnsettledRidesByDriver(driverId);
+
+                if (unsettledRides == null || unsettledRides.Count == 0)
+                {
+                    return Ok(new { success = true, message = "No unsettled rides found for this driver" });
+                }
+
+                // Generate invoice
+                var invoiceService = new InvoiceService();
+                var invoiceNumber = InvoiceService.GenerateInvoiceNumber(driverId);
+                var pdfBytes = invoiceService.GenerateInvoice(driver, unsettledRides, invoiceNumber);
+                Console.WriteLine("invoice generated");
+                // Calculate net amount for email
+                decimal totalOwedToDriver = 0;
+                decimal totalOwedByDriver = 0;
+                foreach (var ride in unsettledRides)
+                {
+                    var driverComp = ride.DriversCompensation ?? 0;
+                    if (ride.PaymentType == "cash" || ride.PaymentType == "zelle")
+                    {
+                        totalOwedByDriver += (ride.Cost - driverComp);
+                    }
+                    else
+                    {
+                        totalOwedToDriver += driverComp;
+                    }
+                }
+                var netAmount = totalOwedToDriver - totalOwedByDriver;
+                var driverOwesCompany = netAmount < 0;
+
+                // Send invoice email (if driver has email)
+                if (!string.IsNullOrEmpty(driver.Email))
+                {
+                    var emailService = new EmailService(_configuration);
+                    await emailService.SendDriverInvoiceAsync(
+                        driver.Email,
+                        driver.Name,
+                        pdfBytes,
+                        invoiceNumber,
+                        Math.Abs(netAmount),
+                        driverOwesCompany,
+                        unsettledRides.OrderBy(x => x.ScheduledFor).FirstOrDefault().ScheduledFor,
+                        unsettledRides.OrderBy(x => x.ScheduledFor).LastOrDefault().ScheduledFor
+                    );
+                }
+
+                // Now settle the rides in the database
                 rideRepo.SettleDriverRides(driverId);
-                return Ok(new { success = true, message = "Driver rides settled successfully" });
+
+
+                ///
+                /// TODO: save invoice locally to be c=accessed somewhere
+                ///
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Driver rides settled successfully",
+                    invoiceNumber = invoiceNumber,
+                    ridesSettled = unsettledRides.Count,
+                    emailSent = !string.IsNullOrEmpty(driver.Email)
+                });
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

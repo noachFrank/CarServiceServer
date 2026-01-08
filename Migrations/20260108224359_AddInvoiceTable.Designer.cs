@@ -4,6 +4,7 @@ using DispatchApp.Server.data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DispatchApp.Server.Migrations
 {
     [DbContext(typeof(DispatchDbContext))]
-    partial class DispatchDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108224359_AddInvoiceTable")]
+    partial class AddInvoiceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,6 +238,7 @@ namespace DispatchApp.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FilePath")
+                        .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
@@ -248,9 +252,6 @@ namespace DispatchApp.Server.Migrations
 
                     b.Property<decimal>("NetAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<byte[]>("PdfData")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateTime>("PeriodEnd")
                         .HasColumnType("datetime2");

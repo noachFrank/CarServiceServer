@@ -145,6 +145,7 @@ namespace DispatchApp.Server.Controllers
             {
                 var rideRepo = new RideRepo(_connectionString);
                 var userRepo = new UserRepo(_connectionString);
+                var invoiceRepo = new InvoiceRepo(_connectionString);
 
                 // Get the driver info
                 var driver = userRepo.GetDriverById(driverId);
@@ -166,6 +167,7 @@ namespace DispatchApp.Server.Controllers
                 var invoiceNumber = InvoiceService.GenerateInvoiceNumber(driverId);
                 var pdfBytes = invoiceService.GenerateInvoice(driver, unsettledRides, invoiceNumber);
                 Console.WriteLine("invoice generated");
+
                 // Calculate net amount for email
                 decimal totalOwedToDriver = 0;
                 decimal totalOwedByDriver = 0;
@@ -184,6 +186,28 @@ namespace DispatchApp.Server.Controllers
                 var netAmount = totalOwedToDriver - totalOwedByDriver;
                 var driverOwesCompany = netAmount < 0;
 
+                var periodStart = unsettledRides.OrderBy(x => x.ScheduledFor).First().ScheduledFor;
+                var periodEnd = unsettledRides.OrderBy(x => x.ScheduledFor).Last().ScheduledFor;
+
+                // Save invoice record to database (including PDF data)
+                var invoiceRecord = new Invoice
+                {
+                    InvoiceNumber = invoiceNumber,
+                    DriverId = driverId,
+                    DriverName = driver.Name,
+                    DriverUsername = driver.UserName,
+                    CreatedAt = DateTime.Now,
+                    PeriodStart = periodStart,
+                    PeriodEnd = periodEnd,
+                    RideCount = unsettledRides.Count,
+                    TotalOwedToDriver = totalOwedToDriver,
+                    TotalOwedByDriver = totalOwedByDriver,
+                    NetAmount = netAmount,
+                    DriverOwesCompany = driverOwesCompany,
+                    PdfData = pdfBytes, // Store PDF in database
+                    EmailSent = false
+                };
+
                 // Send invoice email (if driver has email)
                 if (!string.IsNullOrEmpty(driver.Email))
                 {
@@ -195,18 +219,17 @@ namespace DispatchApp.Server.Controllers
                         invoiceNumber,
                         Math.Abs(netAmount),
                         driverOwesCompany,
-                        unsettledRides.OrderBy(x => x.ScheduledFor).FirstOrDefault().ScheduledFor,
-                        unsettledRides.OrderBy(x => x.ScheduledFor).LastOrDefault().ScheduledFor
+                        periodStart,
+                        periodEnd
                     );
+                    invoiceRecord.EmailSent = true;
+                    invoiceRecord.LastEmailSentAt = DateTime.Now;
                 }
+
+                invoiceRepo.AddInvoice(invoiceRecord);
 
                 // Now settle the rides in the database
                 rideRepo.SettleDriverRides(driverId);
-
-
-                ///
-                /// TODO: save invoice locally to be c=accessed somewhere
-                ///
 
                 return Ok(new
                 {
@@ -222,6 +245,125 @@ namespace DispatchApp.Server.Controllers
                 Console.WriteLine(ex);
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        #endregion
+
+        #region Invoices
+
+        [HttpGet("Invoices/Drivers")]
+        public IActionResult GetDriversWithInvoices()
+        {
+            try
+            {
+                var invoiceRepo = new InvoiceRepo(_connectionString);
+                var drivers = invoiceRepo.GetDriversWithInvoiceCounts();
+                return Ok(drivers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Invoices/Driver/{driverId}")]
+        public IActionResult GetDriverInvoices(int driverId)
+        {
+            try
+            {
+                var invoiceRepo = new InvoiceRepo(_connectionString);
+                var invoices = invoiceRepo.GetInvoicesByDriver(driverId);
+                return Ok(invoices);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Invoices/Download/{invoiceNumber}")]
+        public IActionResult DownloadInvoice(string invoiceNumber)
+        {
+            try
+            {
+                var invoiceRepo = new InvoiceRepo(_connectionString);
+                var invoice = invoiceRepo.GetByInvoiceNumber(invoiceNumber);
+
+                if (invoice == null)
+                {
+                    return NotFound("Invoice not found");
+                }
+
+                // Get PDF from database
+                if (invoice.PdfData == null || invoice.PdfData.Length == 0)
+                {
+                    return NotFound("Invoice PDF data not found");
+                }
+
+                return File(invoice.PdfData, "application/pdf", $"{invoiceNumber}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("Invoices/Resend")]
+        public async Task<IActionResult> ResendInvoice([FromBody] ResendInvoiceRequest request)
+        {
+            try
+            {
+                var invoiceRepo = new InvoiceRepo(_connectionString);
+                var userRepo = new UserRepo(_connectionString);
+
+                var invoice = invoiceRepo.GetByInvoiceNumber(request.InvoiceNumber);
+                if (invoice == null)
+                {
+                    return NotFound("Invoice not found");
+                }
+
+                var driver = userRepo.GetDriverById(invoice.DriverId);
+                if (driver == null)
+                {
+                    return NotFound("Driver not found");
+                }
+
+                if (string.IsNullOrEmpty(driver.Email))
+                {
+                    return BadRequest("Driver does not have an email address");
+                }
+
+                // Get PDF from database
+                if (invoice.PdfData == null || invoice.PdfData.Length == 0)
+                {
+                    return NotFound("Invoice PDF data not found");
+                }
+
+                var emailService = new EmailService(_configuration);
+                await emailService.SendDriverInvoiceAsync(
+                    driver.Email,
+                    driver.Name,
+                    invoice.PdfData,
+                    invoice.InvoiceNumber,
+                    Math.Abs(invoice.NetAmount),
+                    invoice.DriverOwesCompany,
+                    invoice.PeriodStart,
+                    invoice.PeriodEnd
+                );
+
+                invoiceRepo.UpdateEmailSent(invoice.InvoiceNumber);
+
+                return Ok(new { success = true, message = "Invoice resent successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        public class ResendInvoiceRequest
+        {
+            public string InvoiceNumber { get; set; }
         }
 
         [HttpPost("SettleRide")]

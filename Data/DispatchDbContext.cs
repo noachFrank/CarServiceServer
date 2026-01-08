@@ -32,6 +32,7 @@ public class DispatchDbContext : DbContext
     public DbSet<Communication> Communications { get; set; }
     public DbSet<Recurring> Recurrings { get; set; }
     public DbSet<NotificationPreferences> NotificationPreferences { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -216,6 +217,48 @@ public class DispatchDbContext : DbContext
 
         modelBuilder.Entity<NotificationPreferences>()
             .HasIndex(np => np.DriverId)
+            .IsUnique();
+
+        // Invoice
+        modelBuilder.Entity<Invoice>()
+            .HasKey(i => i.Id);
+
+        modelBuilder.Entity<Invoice>()
+            .HasOne(i => i.Driver)
+            .WithMany()
+            .HasForeignKey(i => i.DriverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.InvoiceNumber)
+            .HasMaxLength(64);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.DriverName)
+            .HasMaxLength(128);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.DriverUsername)
+            .HasMaxLength(64);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.FilePath)
+            .HasMaxLength(512);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.TotalOwedToDriver)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.TotalOwedByDriver)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.NetAmount)
+            .HasColumnType("decimal(18,2)");
+
+        modelBuilder.Entity<Invoice>()
+            .HasIndex(i => i.InvoiceNumber)
             .IsUnique();
 
     }
